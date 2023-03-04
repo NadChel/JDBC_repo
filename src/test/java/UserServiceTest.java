@@ -89,7 +89,7 @@ public class UserServiceTest {
             userService.dropUsersTable();
             userService.createUsersTable();
             userService.saveUser(testName, testLastName, testAge);
-            userService.cleanUsersTable();
+            userService.clearUsersTable();
 
             if (userService.getAllUsers().size() != 0) {
                 Assert.fail("Метод очищения таблицы пользователей реализован не корректно");
