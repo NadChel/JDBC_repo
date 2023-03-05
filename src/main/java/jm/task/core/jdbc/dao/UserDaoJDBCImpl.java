@@ -14,15 +14,15 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void createUsersTable() {
         try (Connection connection = Util.getConnection()) {
-            Statement statement = connection.createStatement();
-            statement.execute("""
+            connection.prepareStatement("""
                     CREATE TABLE IF NOT EXISTS users_db.users (
                       id int NOT NULL AUTO_INCREMENT,
                       name varchar(15),
                       last_name varchar(25),
                       age tinyint,
                       PRIMARY KEY (id)
-                    );""");
+                    );""")
+                    .execute();
             System.out.println("Таблица Users была создана или уже существовала");
         } catch (SQLException e) {
             System.err.println("An SQLException was thrown: " + e.getMessage());
@@ -31,8 +31,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void dropUsersTable() {
         try (Connection connection = Util.getConnection()) {
-            Statement statement = connection.createStatement();
-            statement.execute("DROP TABLE IF EXISTS users_db.users;");
+            connection.prepareStatement("DROP TABLE IF EXISTS users_db.users;").execute();
             System.out.println("Таблица Users была удалена или её не существовало");
         } catch (SQLException e) {
             System.err.println("An SQLException was thrown: " + e.getMessage());
@@ -41,9 +40,10 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void saveUser(String name, String lastName, byte age) {
         try (Connection connection = Util.getConnection()) {
-            Statement statement = connection.createStatement();
-            statement.execute(String.format
-                    ("INSERT INTO users_db.users (name, last_name, age) VALUES('%s','%s',%d);", name, lastName, age));
+            connection.prepareStatement(String.format
+                            ("INSERT INTO users_db.users (name, last_name, age) VALUES('%s','%s',%d);",
+                                    name, lastName, age))
+                    .execute();
             System.out.printf("User %s %s добавлен в базу данных\n", name, lastName);
         } catch (SQLException e) {
             System.err.println("An SQLException was thrown: " + e.getMessage());
@@ -53,10 +53,10 @@ public class UserDaoJDBCImpl implements UserDao {
     public void saveUsers(User... users) {
         try (Connection connection = Util.getConnection()) {
             for (User user : users) {
-                Statement statement = connection.createStatement();
-                statement.execute(String.format
+                connection.prepareStatement(String.format
                         ("INSERT INTO users_db.users (name, last_name, age) VALUES('%s','%s',%d);",
-                                user.getName(), user.getLastName(), user.getAge()));
+                        user.getName(), user.getLastName(), user.getAge()))
+                        .execute();
             }
             int length = users.length;
             if (length == 0) {
@@ -73,9 +73,9 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void removeUserById(long id) {
         try (Connection connection = Util.getConnection()) {
-            Statement statement = connection.createStatement();
-            statement.execute(String.format
-                    ("DELETE FROM users_db.users WHERE id = %d;", id));
+            connection.prepareStatement(String.format
+                    ("DELETE FROM users_db.users WHERE id = %d;", id))
+                    .execute();
             System.out.printf("User c id %d был удалён из таблицы\n", id);
         } catch (SQLException e) {
             System.err.println("An SQLException was thrown: " + e.getMessage());
@@ -85,7 +85,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
         try (Connection connection = Util.getConnection();
-                ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM users_db.users")) {
+                ResultSet rs = connection.prepareStatement("SELECT * FROM users_db.users").executeQuery()) {
             while(rs.next()) {
                 User user;
                 userList.add(user = new User(rs.getString("name"), rs.getString("last_name"),
@@ -100,8 +100,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void clearUsersTable() {
         try (Connection connection = Util.getConnection()) {
-            Statement statement = connection.createStatement();
-            statement.execute("TRUNCATE users_db.users");
+            connection.prepareStatement("TRUNCATE users_db.users").execute();
             System.out.println("Таблица Users была очищена");
         } catch (SQLException e) {
             System.err.println("An SQLException was thrown: " + e.getMessage());
