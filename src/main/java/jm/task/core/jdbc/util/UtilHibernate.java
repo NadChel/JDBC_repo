@@ -6,11 +6,13 @@ public class UtilHibernate {
     private static final Properties props = new Properties();
 
     public static Properties getProps() {
-        String[][] properties = {{"hibernate.connection.url", "jdbc:mysql://localhost:3306/users_db"},
+        String[][] properties = {
+                {"hibernate.connection.url", "jdbc:mysql://localhost:3306/users_db"},
                 {"dialect", "org.hibernate.dialect.MySQLDialect"},
                 {"hibernate.connection.username", "pp_user"},
                 {"hibernate.connection.password", "pp_user"},
-                {"hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver"}};
+                {"hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver"},
+                };
         for (String[] property : properties) {
             props.setProperty(property[0], property[1]);
         }

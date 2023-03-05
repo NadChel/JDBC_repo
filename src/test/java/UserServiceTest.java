@@ -1,13 +1,13 @@
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.service.UserService;
-import jm.task.core.jdbc.service.UserServiceImpl;
+import jm.task.core.jdbc.service.UserServiceHibernateImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
 
 public class UserServiceTest {
-    private final UserService userService = new UserServiceImpl();
+    private final UserService userService = new UserServiceHibernateImpl();
 
     private final String testName = "Ivan";
     private final String testLastName = "Ivanov";
@@ -84,7 +84,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void cleanUsersTable() {
+    public void clearUsersTable() {
         try {
             userService.dropUsersTable();
             userService.createUsersTable();
