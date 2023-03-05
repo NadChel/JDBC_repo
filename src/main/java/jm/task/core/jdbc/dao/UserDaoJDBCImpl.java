@@ -50,11 +50,33 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    public void saveUsers(User... users) {
+        try (Connection connection = Util.getConnection()) {
+            for (User user : users) {
+                Statement statement = connection.createStatement();
+                statement.execute(String.format
+                        ("INSERT INTO users_db.users (name, last_name, age) VALUES('%s','%s',%d);",
+                                user.getName(), user.getLastName(), user.getAge()));
+            }
+            int length = users.length;
+            if (length == 0) {
+                System.out.println("Экземпляров класса User не предоставлено, таблица осталась без изменений\n");
+            } else {
+                System.out.printf("%d %s класса User %s добавлено в таблицу\n",
+                    length, (length == 1 ? "экземпляр" : length < 5 ? "экземпляра" : "экземпляров"),
+                        (length == 1 ? "был" : "было"));
+            }
+        } catch (SQLException e) {
+            System.err.println("An SQLException was thrown: " + e.getMessage());
+        }
+    }
+
     public void removeUserById(long id) {
         try (Connection connection = Util.getConnection()) {
             Statement statement = connection.createStatement();
             statement.execute(String.format
                     ("DELETE FROM users_db.users WHERE id = %d;", id));
+            System.out.printf("User c id %d был удалён из таблицы\n", id);
         } catch (SQLException e) {
             System.err.println("An SQLException was thrown: " + e.getMessage());
         }
@@ -63,7 +85,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
         try (Connection connection = Util.getConnection();
-                ResultSet rs = connection.prepareStatement("SELECT * FROM users_db.users").executeQuery()) {
+                ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM users_db.users")) {
             while(rs.next()) {
                 User user;
                 userList.add(user = new User(rs.getString("name"), rs.getString("last_name"),
@@ -80,6 +102,7 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Connection connection = Util.getConnection()) {
             Statement statement = connection.createStatement();
             statement.execute("TRUNCATE users_db.users");
+            System.out.println("Таблица Users была очищена");
         } catch (SQLException e) {
             System.err.println("An SQLException was thrown: " + e.getMessage());
         }

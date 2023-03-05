@@ -21,7 +21,6 @@ public class UserServiceImpl implements UserService {
 
     public void removeUserById(long id) {
         userDaoJDBC.removeUserById(id);
-        System.out.printf("User c id %d был удалён из таблицы\n", id);
     }
 
     public List<User> getAllUsers() {
@@ -30,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
     public void clearUsersTable() {
         userDaoJDBC.clearUsersTable();
-        System.out.println("Таблица Users была очищена");
+    }
+
+    public void saveUsers(User... users) {
+        userDaoJDBC.saveUsers(users);
     }
 }

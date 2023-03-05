@@ -16,4 +16,6 @@ public interface UserService {
     List<User> getAllUsers();
 
     void clearUsersTable();
+
+    void saveUsers(User... users);
 }
